@@ -27,6 +27,8 @@ with mss.mss() as sct:
             "height": window.height - 120
         }
 
+        print(monitor)
+
         # 3. CAPTURE
         img = np.array(sct.grab(monitor))
 
