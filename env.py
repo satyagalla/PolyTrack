@@ -48,12 +48,14 @@ class PolytrackEnv(gym.Env):
             pass
         time.sleep(0.5)
 
-        # 3. ACTION SPACE (Research-Backed: Combined Actions)
+        # 3. EXPANDED ACTION SPACE (6 Actions)
         # 0: Max Acceleration (W)
-        # 1: Accelerate Left (W + A) - Momentum Conservation
-        # 2: Accelerate Right (W + D) - Momentum Conservation
-        # 3: Panic Brake (S)
-        self.action_space = spaces.Discrete(4)
+        # 1: Soft Left (W + A)
+        # 2: Soft Right (W + D)
+        # 3: Hard Brake (S)
+        # 4: Hard Left (S + A) <--- NEW: Rotates car while slowing
+        # 5: Hard Right (S + D) <--- NEW: Rotates car while slowing
+        self.action_space = spaces.Discrete(6)
 
         # 4. OBSERVATION SPACE (84x84 Grayscale)
         self.observation_space = spaces.Box(low=0, high=255, 
@@ -71,26 +73,24 @@ class PolytrackEnv(gym.Env):
         }
 
     def step(self, action):
-        # 1. APPLY ACTION (Bang-Bang Control)
-        # Reset conflicting keys first
-        pydirectinput.keyUp('left')
-        pydirectinput.keyUp('right')
-        pydirectinput.keyUp('up')
-        pydirectinput.keyUp('down')
+        # Reset keys...
+        pydirectinput.keyUp('left'); pydirectinput.keyUp('right')
+        pydirectinput.keyUp('up'); pydirectinput.keyUp('down')
 
-        if action == 0:   # FORWARD (Max Velocity)
+        if action == 0:   # GAS STRAIGHT
             pydirectinput.keyDown('up')
-            
-        elif action == 1: # LEFT + GAS (Cornering Velocity)
-            pydirectinput.keyDown('up')
-            pydirectinput.keyDown('left')
-            
-        elif action == 2: # RIGHT + GAS (Cornering Velocity)
-            pydirectinput.keyDown('up')
-            pydirectinput.keyDown('right')
-            
-        elif action == 3: # BRAKE (Error Correction)
+        elif action == 1: # GAS LEFT
+            pydirectinput.keyDown('up'); pydirectinput.keyDown('left')
+        elif action == 2: # GAS RIGHT
+            pydirectinput.keyDown('up'); pydirectinput.keyDown('right')
+        elif action == 3: # BRAKE STRAIGHT
             pydirectinput.keyDown('down')
+        elif action == 4: # BRAKE LEFT (The Cornering Fix)
+            pydirectinput.keyDown('down'); pydirectinput.keyDown('left')
+        elif action == 5: # BRAKE RIGHT (The Cornering Fix)
+            pydirectinput.keyDown('down'); pydirectinput.keyDown('right')
+        
+        # ... rest of function ...
 
         # 2. CAPTURE STATE
         raw_screen = np.array(self.sct.grab(self.monitor))

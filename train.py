@@ -27,9 +27,10 @@ def main():
         env,
         verbose=1, 
         tensorboard_log=LOG_DIR,
-        learning_rate=0.0003,
+        learning_rate=0.0001,    # Reduced from 0.0003 (Stabilizes the Wiggle)
         n_steps=2048,
-        batch_size=64
+        batch_size=128,          # Increased from 64 (Smoother updates)
+        ent_coef=0.01            # Encourages exploration of new buttons (like Brake)
     )
 
     print("--- STARTING TRAINING ---")
