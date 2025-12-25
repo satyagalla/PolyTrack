@@ -135,12 +135,11 @@ class PolytrackEnv(gym.Env):
     def _check_crash(self, gray_frame):
         # ROI: Top Center (Look for "Press R" or "Level Failed")
         h, w = gray_frame.shape
-        roi = gray_frame[:int(h*0.2), int(w*0.25):int(w*0.75)]
-        
+        roi = gray_frame[int(h*0.12):int(h*0.4), int(w*0.25):int(w*0.75)]        
         _, thresh = cv2.threshold(roi, 240, 255, cv2.THRESH_BINARY)
         white_pixels = cv2.countNonZero(thresh)
 
-        return white_pixels > 50
+        return white_pixels > 100
 
     def close(self):
         pydirectinput.keyUp('up')
