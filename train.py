@@ -21,17 +21,25 @@ def main():
     # Stack 4 frames so the AI can "feel" speed
     env = VecFrameStack(env, n_stack=4)
 
-    # 2. DEFINE MODEL
-    model = PPO(
-        "CnnPolicy", 
-        env,
-        verbose=1, 
-        tensorboard_log=LOG_DIR,
-        learning_rate=0.0001,    # Reduced from 0.0003 (Stabilizes the Wiggle)
-        n_steps=2048,
-        batch_size=128,          # Increased from 64 (Smoother updates)
-        ent_coef=0.01            # Encourages exploration of new buttons (like Brake)
-    )
+    # 2. DEFINE MODEL (Auto-Resume Logic)
+    model_path = f"{MODELS_DIR}/100000.zip" # Example: Change this to your latest save if restarting
+    
+    if os.path.exists(model_path):
+        print(f"Loading existing model: {model_path}")
+        model = PPO.load(model_path, env=env)
+    else:
+        print("Creating new model...")
+        model = PPO(
+            "CnnPolicy", 
+            env,
+            verbose=1, 
+            tensorboard_log=LOG_DIR,
+            learning_rate=0.0001,
+            n_steps=2048,
+            batch_size=128,
+            ent_coef=0.01,
+            device="cuda" # Force GPU usage
+        )
 
     print("--- STARTING TRAINING ---")
     print("Please click the PolyTrack window within 5 seconds.")

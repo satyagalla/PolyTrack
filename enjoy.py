@@ -8,7 +8,7 @@ import cv2
 # --- CONFIGURATION ---
 # Update this filename to match your latest saved model in the models/PPO folder
 # Based on your logs, it's likely around 1000000.zip
-MODEL_PATH = "models/PPO/960000" 
+MODEL_PATH = "models/PPO/560000" 
 
 def main():
     print(f"Loading model from: {MODEL_PATH}")
